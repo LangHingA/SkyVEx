@@ -1,0 +1,13 @@
+# SkyVEx Python dependencies
+#
+# The meshoptimizer native decoder ships prebuilt at
+# _meshopt/lib/meshoptimizer.dll, so it is NOT a pip dependency here.
+
+lz4                 # LOD0 terrain decompression
+Pillow              # KTX -> PNG texture output
+texture2ddecoder    # BCn (BC1/3/4/5/6H/7) block decoding
+PyOpenGL            # 3D preview panel (preview3d.py)
+
+# Optional: faster GL calls. Safe to skip; the preview disables its error
+# checking to avoid a known accelerate slowdown.
+# PyOpenGL_accelerate

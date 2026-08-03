@@ -1,0 +1,24 @@
+__pycache__/
+*.pyc
+*.pyo
+
+# backup zips
+tool/scripts/[备份]*/
+
+# PyInstaller
+*.exe
+*.spec
+build/
+dist/
+
+# old zip distribution
+tool.zip
+
+# runtime output
+mesh/
+*.obj
+输出/
+*_export/
+
+# held-back provenance/forensic docs (kept local, not published)
+PROVENANCE.md

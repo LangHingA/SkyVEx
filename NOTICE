@@ -1,0 +1,89 @@
+Each source file carries a provenance header stating its author, origin
+repository and license. This NOTICE reproduces the third-party licenses.
+
+This project includes third-party parsing scripts that are not original to SkyVEx.
+Their licenses and copyright notices are reproduced below.
+
+The bintojson.py parser was written from scratch by lingyunalingyun, based on the
+TGCL binary format researched by Miau. It does not contain code from any upstream
+repository.
+
+================================================================================
+SkyBstbake — meshes/terrain parser
+https://github.com/ThatSkyOldServer/SkyBstbake
+Authors: checion (雨人) & Heriel (落秋)
+================================================================================
+
+MIT License
+
+Copyright (c) 2026 ThatSkyOldServer
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================================
+Sky-.bin-reader — TGCL format research
+https://github.com/Miau0x1/Sky-.bin-reader
+Author: Miau
+================================================================================
+
+SkyVEx's bintojson.py is an independent implementation informed by Miau's format
+research. No code from this repository is used.
+
+================================================================================
+that-sky-project — meshes2obj_json.py (.meshes <-> OBJ/JSON converter)
+Bundled as tool/scripts/meshes2obj_json.py
+License: LGPL-2.1
+================================================================================
+
+This file is used unmodified as an alternative pure-Python .meshes backend.
+Under the LGPL-2.1, its source is provided alongside SkyVEx; the terms of that
+license govern this file only. A copy of the LGPL-2.1 is available at
+https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
+
+================================================================================
+meshoptimizer — vertex/index buffer decoder (native library)
+https://github.com/zeux/meshoptimizer
+Author: Arseny Kapoulkine (zeux)
+================================================================================
+
+SkyVEx ships a prebuilt meshoptimizer shared library at
+_meshopt/lib/meshoptimizer.dll and loads it via ctypes to decode LOD0 terrain.
+No meshoptimizer source is included or modified.
+
+MIT License
+
+Copyright (c) 2016-2026 Arseny Kapoulkine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
