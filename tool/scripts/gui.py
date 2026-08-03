@@ -25,7 +25,10 @@ from collections import OrderedDict
 
 _ANSI_RE = re.compile(r"\033\[[0-9;]*m")
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+if getattr(sys, "frozen", False):
+    SCRIPT_DIR = sys._MEIPASS          # PyInstaller bundle root
+else:
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 
 SCENE_ORDER = ["dawn", "prairie", "rain", "sunset", "dusk", "night", "storm"]
@@ -1524,7 +1527,9 @@ def main():
     except Exception:
         pass
     root = tk.Tk()
-    _icon_path = os.path.join(os.path.dirname(SCRIPT_DIR), os.pardir, "icon.ico")
+    _icon_path = os.path.join(SCRIPT_DIR, "icon.ico")
+    if not os.path.isfile(_icon_path):
+        _icon_path = os.path.join(os.path.dirname(SCRIPT_DIR), os.pardir, "icon.ico")
     if os.path.isfile(_icon_path):
         root.iconbitmap(_icon_path)
     else:

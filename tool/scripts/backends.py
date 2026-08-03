@@ -14,7 +14,10 @@
 import os
 import sys
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+if getattr(sys, "frozen", False):
+    SCRIPT_DIR = sys._MEIPASS          # PyInstaller bundle root
+else:
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 材质 ID → 名称映射 (来源: Miau — https://github.com/Miau0x1/Sky-.bin-reader)
 MATERIAL_NAMES = {
