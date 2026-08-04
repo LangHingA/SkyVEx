@@ -38,9 +38,15 @@ Features:
 > wrote it, which repository it came from, and under which license. See
 > [NOTICE](./NOTICE) for the third-party licenses.
 
-## Screenshot
+## Screenshots
 
-![SkyVEx GUI](./screenshot.png)
+| Terrain + 3D preview | Model library |
+|----------------------|---------------|
+| ![Terrain](./docs/ui-terrain.png) | ![Models](./docs/ui-models.png) |
+
+| Texture preview | Audio tab |
+|-----------------|-----------|
+| ![Textures](./docs/ui-textures.png) | ![Audio](./docs/ui-audio.png) |
 
 ## Requirements
 

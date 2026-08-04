@@ -35,7 +35,13 @@ OBJ、纹理转 PNG、音频转 WAV。**界面、地图→OBJ 导出引擎、`.b
 
 ## 截图
 
-![SkyVEx GUI](./screenshot.png)
+| 地形 + 3D 预览 | 模型库 |
+|----------------|--------|
+| ![地形](./docs/ui-terrain.png) | ![模型](./docs/ui-models.png) |
+
+| 图片预览 | 音频标签 |
+|----------|----------|
+| ![纹理](./docs/ui-textures.png) | ![音频](./docs/ui-audio.png) |
 
 ## 依赖
 
