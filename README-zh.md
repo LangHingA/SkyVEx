@@ -129,16 +129,92 @@ tool/scripts/
 | 标记 | 交互点位置的小八面体标记（可选），按类名着色 |
 | 纹理 | PNG 文件 + `map_Kd` 材质引用（可选） |
 
+## 工作原理（格式详解）
+
+SkyVEx 读三类文件，全部从原始字节手工解析；下面的布局是通过分析还原、并对照公开
+参考（仅字节布局，不含任何第三方解析代码）交叉验证过的。
+
+### `.mesh` — 独立模型（`mesh_parser.py`）
+
+`.mesh` 文件开头 `0x00` 处是一个 32 位**版本号**。支持 `0x17`–`0x20`，用同一套
+解析器统一处理，分两大类：
+
+**非压缩（`0x17`–`0x1D`）。** 顶点/法线/UV/索引块位于头部之后的固定偏移。位置为
+3× `float32`（16 字节步长），UV 为 `float32` 对，索引为 `uint32`。头部有两种变体：
+`≤0x19` 通过扫描第一个 `0x01` 标记字节来定位顶点数，`0x1A`–`0x1D` 则从固定偏移读取。
+
+**压缩（`0x1E`–`0x20`）。** 文件主体是一整个 **LZ4** 块。正确找到它是关键：
+
+1. `0x48` 处是 `animated` 标志。
+2. **挂点标记（attach-point markers）** — `0x4A` 处一个 `uint32` **数量**，后面跟
+   这么多条固定 **112 字节** 的记录。它们是命名的绑定锚点（例如斗篷的
+   `Capestar_Marker_1..5`，配饰靠它挂到身体上）。绝大多数模型数量为 `0`，斗篷通常是 `5`。
+3. 于是 LZ4 载荷真正的起点是 `payload_off = 0x4E + 数量 * 112`（`≥0x20`）。
+   过去写死 `0x4E`（当作从来没有标记）正是少数斗篷模型解析失败的原因。
+4. 载荷头是三个 `int32`：`is_compressed`、`compressed_size`、`uncompressed_size`，
+   据此把块 LZ4 解压到指定大小。
+
+解压后的缓冲里，几何数据可能以**压缩打包**形式存储以省空间 —— 这正是文件名里那些
+标志位在告诉你的：
+
+| 标志 | 含义 | SkyVEx 如何解码 |
+|------|------|-----------------|
+| `ZipPos` | 位置为 10-bit **量化**（一个 `uint32` 把 X/Y/Z 各压进 10 bit） | 按网格 AABB 反量化回 `float32` |
+| `ZipUvs` | UV 为 16-bit **量化** | 按每个网格的 UV 最小/最大值反量化 |
+| `StripNorm` | 法线被丢弃以省空间 | 跳过，由建模软件重算 |
+| `StripAnim` / `CompOcc` | 动画/遮挡数据被剥离或压实 | 遍历缓冲时处理 |
+
+带动画的模型后面还跟骨骼权重（每顶点 4 索引 + 4 权重）和内嵌骨架。
+
+### `.meshes` — 地形/地图块（`backends.py`、`Sky_Bstbake.py`）
+
+`.meshes` 是一个 `LVL0` 容器：4 字节魔数、`0x04` 处一个 `uint32` `file_version`，
+再是一张命名的 4 字符**段（segment）**表（`DESC`、`LOD0`、`GEO0`、`METR`），每段带
+偏移和长度。两个互补后端读取两个不同的段：
+
+- **`LOD0`（默认，BstBake）** — LZ4 压缩的*烘焙*地形，由 `Sky_Bstbake.py` 按 patch
+  拆分。它带**材质颜色**，所以驱动了彩色地形预览和按材质导出。版本门槛：`≥55` 有
+  `METR`，`≥57` 有 `GEO0`，`≥60` 有额外字段。
+- **`GEO0`（可选，meshopt）** — 用 meshoptimizer 顶点编码的几何，由原生
+  `meshoptimizer.dll` 或纯 Python 的 `meshes2obj_json.py` 解码。版本 `0x3C`/`0x3D`，
+  无顶点颜色。
+
+### 纹理（`gui.py`）
+
+KTX 纹理按其 `glInternalFormat` 读取，按块压缩格式（BC1 / BC3 / BC4 / BC5 / BC6H /
+BC7）经 `texture2ddecoder` 解码，做 BGRA→RGBA 通道交换，导出为 PNG，并在 MTL 里写入
+对应的 `map_Kd`。
+
+### `.bin` — 场景/物体摆放（`bintojson.py`）
+
+TGCL `.bin` 文件列出物体实例（含每实例变换）和交互标记。`bintojson.py` 遍历这个结构，
+供导出器摆放地图内模型、生成标记。
+
+### 支持版本一览
+
+| 类型 | 版本 | 说明 |
+|------|------|------|
+| `.mesh` | `0x17`–`0x20` | 非压缩 `0x17`–`0x1D`，LZ4 `0x1E`–`0x20`，含 `ZipPos`/`ZipUvs` 与挂点标记 |
+| `.meshes` LOD0 | `file_version ≥ 55` | 烘焙地形，带材质颜色 |
+| `.meshes` GEO0 | `0x3C` / `0x3D` | meshopt 几何，无颜色 |
+
 ## 构建 exe
 
-需要 [PyInstaller](https://pyinstaller.org/)：
+发布的 `SkyVEx.exe` 是**独立单文件包**（目标机器无需安装 Python），用
+[PyInstaller](https://pyinstaller.org/) 从 `SkyVEx.spec` 构建：
 
 ```bash
 pip install pyinstaller
-pyinstaller --onefile --noconsole --icon=icon.ico --name SkyVEx SkyVEx.py
+pyinstaller --noconfirm --clean SkyVEx.spec
 ```
 
-生成的 `dist/SkyVEx.exe` 放到项目根目录即可。目标机器仍需安装 Python — exe 只是启动器，不是独立打包。
+该 spec 以 `tool/scripts/gui.py` 为入口，把同目录脚本、`meshoptimizer.dll`、图标和
+许可证文件作为数据一起打包，这样冻结后的 `SCRIPT_DIR`（`sys._MEIPASS`）就能在运行时
+按路径导入它们。输出为 `dist/SkyVEx.exe`。
+
+另有一个轻量替代：源码启动器 `SkyVEx.py`，它只是用外部 Python 拉起 `gui.py` —— 用
+`pyinstaller --onefile --noconsole --icon=icon.ico --name SkyVEx SkyVEx.py` 构建，但
+这种版本仍需目标机器装有 Python。
 
 ## 常见问题
 

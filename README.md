@@ -135,18 +135,107 @@ repositories (only a SkyVEx attribution header is prepended):
 | Markers | Small octahedron pins at interaction points (optional), colored per class |
 | Textures | PNG files + `map_Kd` material references (optional) |
 
+## How it works (format internals)
+
+SkyVEx reads three kinds of files. All parsing is done from the raw bytes; the
+layouts below were recovered by inspection and cross-checked against public
+references (byte layouts only — no third-party parser code).
+
+### `.mesh` — individual models (`mesh_parser.py`)
+
+A `.mesh` file starts with a 32-bit **version** at offset `0x00`. Versions
+`0x17`–`0x20` are supported through one unified parser, which splits into two
+families:
+
+**Uncompressed (`0x17`–`0x1D`).** Vertex/normal/UV/index blocks sit at fixed
+offsets after the header. Positions are 3× `float32` (16-byte stride), UVs are
+`float32` pairs, indices are `uint32`. Two header variants exist: `≤0x19`
+locates the vertex count by scanning for the first `0x01` marker byte, `0x1A`–
+`0x1D` reads it from a fixed offset.
+
+**Compressed (`0x1E`–`0x20`).** The bulk of the file is a single **LZ4** block.
+Reaching it correctly is the interesting part:
+
+1. `animated` flag at `0x48`.
+2. **Attach-point markers** — a `uint32` *count* at `0x4A`, followed by that
+   many fixed **112-byte** records. These are named anchor points (for example
+   a cape's `Capestar_Marker_1..5`, where an accessory pins to the body). Most
+   meshes have a count of `0`; capes typically carry `5`.
+3. The LZ4 payload therefore begins at `payload_off = 0x4E + count * 112`
+   (for `≥0x20`). Assuming a fixed `0x4E` — as if there were never any markers —
+   is what used to break the handful of cape meshes.
+4. The payload header is three `int32`s: `is_compressed`, `compressed_size`,
+   `uncompressed_size`. The block is LZ4-decompressed to that size.
+
+Inside the decompressed buffer the geometry can be stored **packed** to save
+space — this is what the filename flags advertise:
+
+| Flag | Meaning | How SkyVEx decodes it |
+|------|---------|-----------------------|
+| `ZipPos` | Positions are 10-bit **quantized** (a `uint32` packs X/Y/Z into 3× 10 bits) | Dequantized against the mesh AABB back to `float32` |
+| `ZipUvs` | UVs are 16-bit **quantized** | Dequantized against per-mesh UV min/max |
+| `StripNorm` | Normals dropped to save space | Skipped; recomputed by the modeling app |
+| `StripAnim` / `CompOcc` | Animation/occlusion streams stripped or compacted | Handled while walking the buffer |
+
+Bone weights (4 indices + 4 weights per vertex) and an embedded skeleton follow
+for animated meshes.
+
+### `.meshes` — terrain / map chunks (`backends.py`, `Sky_Bstbake.py`)
+
+A `.meshes` file is an `LVL0` container: a 4-byte magic, a `uint32`
+`file_version` at `0x04`, then a table of named 4-char **segments** (`DESC`,
+`LOD0`, `GEO0`, `METR`), each with an offset and length. Two complementary
+backends read two different segments:
+
+- **`LOD0` (default, BstBake)** — LZ4-compressed *baked* terrain, split per
+  patch by `Sky_Bstbake.py`. This carries **material colors**, so it drives the
+  colored terrain preview and per-material export. Feature gates by version:
+  `METR` from `≥55`, `GEO0` from `≥57`, extra fields from `≥60`.
+- **`GEO0` (optional, meshopt)** — geometry encoded with the meshoptimizer
+  vertex codec, decoded either by the native `meshoptimizer.dll` or the
+  pure-Python `meshes2obj_json.py`. Versions `0x3C`/`0x3D`. No vertex colors.
+
+### Textures (`gui.py`)
+
+KTX textures are read by their `glInternalFormat`, decoded per block-compression
+format (BC1 / BC3 / BC4 / BC5 / BC6H / BC7) via `texture2ddecoder`, channel-
+swapped BGRA→RGBA, and written out as PNG with matching `map_Kd` entries in the
+MTL.
+
+### `.bin` — scene / object placement (`bintojson.py`)
+
+The TGCL `.bin` files list object instances (with per-instance transforms) and
+interaction markers. `bintojson.py` walks this structure so the exporter can
+place in-map models and emit marker pins.
+
+### Supported versions at a glance
+
+| Kind | Versions | Notes |
+|------|----------|-------|
+| `.mesh` | `0x17`–`0x20` | uncompressed `0x17`–`0x1D`, LZ4 `0x1E`–`0x20`, incl. `ZipPos`/`ZipUvs` and attach-point markers |
+| `.meshes` LOD0 | `file_version ≥ 55` | baked terrain, material colors |
+| `.meshes` GEO0 | `0x3C` / `0x3D` | meshopt geometry, no colors |
+
 ## Building the exe
 
-Requires [PyInstaller](https://pyinstaller.org/):
+The released `SkyVEx.exe` is a **standalone one-file bundle** (no Python needed
+on the target machine), built with [PyInstaller](https://pyinstaller.org/) from
+`SkyVEx.spec`:
 
 ```bash
 pip install pyinstaller
-pyinstaller --onefile --noconsole --icon=icon.ico --name SkyVEx SkyVEx.py
+pyinstaller --noconfirm --clean SkyVEx.spec
 ```
 
-The output `dist/SkyVEx.exe` can be placed in the project root. Python must
-still be installed on the target machine — the exe is just a launcher, not a
-standalone bundle.
+The spec uses `tool/scripts/gui.py` as the entry point and bundles the sibling
+scripts, the `meshoptimizer.dll`, the icon, and the license files as data, so
+the frozen `SCRIPT_DIR` (`sys._MEIPASS`) can path-import them at runtime. The
+output is `dist/SkyVEx.exe`.
+
+A lightweight alternative is the source launcher `SkyVEx.py`, which just spawns
+`gui.py` with an external Python — build it with
+`pyinstaller --onefile --noconsole --icon=icon.ico --name SkyVEx SkyVEx.py`, but
+that variant still needs Python installed on the target machine.
 
 ## Troubleshooting
 
