@@ -978,6 +978,7 @@ class SkyExportGUI:
         0x8E8F: 'decode_bc6',  # GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT
         0x8E8E: 'decode_bc6',  # GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT
         0x8E8C: 'decode_bc7',  # GL_COMPRESSED_RGBA_BPTC_UNORM
+        0x8E8D: 'decode_bc7',  # GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM (BC7 sRGB — same block layout)
         0x83F0: 'decode_bc1',  # GL_COMPRESSED_RGB_S3TC_DXT1
         0x83F1: 'decode_bc1',  # GL_COMPRESSED_RGBA_S3TC_DXT1
         0x83F3: 'decode_bc3',  # GL_COMPRESSED_RGBA_S3TC_DXT5
