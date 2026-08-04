@@ -46,15 +46,22 @@ SkyVEx's bintojson.py is an independent implementation informed by Miau's format
 research. No code from this repository is used.
 
 ================================================================================
-that-sky-project — meshes2obj_json.py (.meshes <-> OBJ/JSON converter)
+meshes2obj_json.py (.meshes <-> OBJ/JSON converter)
 Bundled as tool/scripts/meshes2obj_json.py
+Ported by 县小威 (XiaoWei) from that-sky-project / that-sky-level
+  https://github.com/that-sky-project/that-sky-level
 License: LGPL-2.1
 ================================================================================
 
 This file is used unmodified as an alternative pure-Python .meshes backend.
+It is a port of that-sky-project's that-sky-level by 县小威 (XiaoWei), with the
+meshoptimizer vertex codec reimplemented in pure Python. Copyright remains with
+that upstream author under the LGPL-2.1.
+
 Under the LGPL-2.1, its source is provided alongside SkyVEx; the terms of that
-license govern this file only. A copy of the LGPL-2.1 is available at
-https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
+license govern this file only. A full copy of the LGPL-2.1 is included in this
+repository at licenses/LGPL-2.1.txt (canonical text also at
+https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt).
 
 ================================================================================
 meshoptimizer — vertex/index buffer decoder (native library)

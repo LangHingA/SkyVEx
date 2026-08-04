@@ -99,7 +99,7 @@ tool/scripts/
 │
 │  [第三方 — 原样，详见各文件头]
 ├── Sky_Bstbake.py             # 地形 .meshes 解码器 — ThatSkyOldServer/SkyBstbake (MIT)
-├── meshes2obj_json.py         # 可选备用 .meshes 后端 — that-sky-project (LGPL-2.1)
+├── meshes2obj_json.py         # 可选备用 .meshes 后端 — 县小威 移植自 that-sky-project (LGPL-2.1)
 └── _meshopt/
     └── lib/
         └── meshoptimizer.dll  # zeux/meshoptimizer (MIT)，自行编译
@@ -114,7 +114,7 @@ tool/scripts/
 | 文件 | 上游 | 许可 |
 |------|------|------|
 | `Sky_Bstbake.py` | [ThatSkyOldServer/SkyBstbake](https://github.com/ThatSkyOldServer/SkyBstbake) — checion (雨人) & Heriel (落秋) | MIT |
-| `meshes2obj_json.py` | [that-sky-project](https://github.com/that-sky-project/that-sky-level-meshes) | LGPL-2.1 |
+| `meshes2obj_json.py` | 县小威 — 移植自 [that-sky-project](https://github.com/that-sky-project/that-sky-level) | LGPL-2.1 |
 
 `meshoptimizer.dll` 由 [zeux/meshoptimizer](https://github.com/zeux/meshoptimizer)
 (MIT) 官方源码编译。
@@ -154,7 +154,7 @@ pyinstaller --onefile --noconsole --icon=icon.ico --name SkyVEx SkyVEx.py
 
 - **GUI、导出引擎、`.bin`/`.mesh` 解析器、3D 预览、纹理管线、后端系统** — lingyunalingyun（本项目原创代码）。
 - **地形解码器** `Sky_Bstbake.py` — checion (雨人) & Heriel (落秋)，[ThatSkyOldServer/SkyBstbake](https://github.com/ThatSkyOldServer/SkyBstbake) (MIT)。
-- **可选 `.meshes` 后端** `meshes2obj_json.py` — [that-sky-project](https://github.com/that-sky-project/that-sky-level-meshes) (LGPL-2.1)。
+- **可选 `.meshes` 后端** `meshes2obj_json.py` — 县小威 (XiaoWei)，移植自 [that-sky-project](https://github.com/that-sky-project/that-sky-level) (LGPL-2.1)。
 - **原生解码库** `meshoptimizer.dll` — [Arseny Kapoulkine (zeux)](https://github.com/zeux/meshoptimizer) (MIT)。
 - **格式参考（公开字节布局，非代码）：** Miau — [Sky-.bin-reader](https://github.com/Miau0x1/Sky-.bin-reader)；kfhammond — [SkyModelViewer](https://github.com/kfhammond/SkyModelViewer)。
 
@@ -162,5 +162,6 @@ pyinstaller --onefile --noconsole --icon=icon.ico --name SkyVEx SkyVEx.py
 
 SkyVEx 自身代码以 **MIT 许可证** 发布 — 见 [LICENSE](./LICENSE)。
 
-`meshes2obj_json.py` 以 **LGPL-2.1** 发布（仅该文件）— 详见文件头。第三方组件
+`meshes2obj_json.py` 以 **LGPL-2.1** 发布（仅该文件）— 详见文件头，完整许可证
+全文见 [licenses/LGPL-2.1.txt](./licenses/LGPL-2.1.txt)。第三方组件
 保留各自原始许可，见 [NOTICE](./NOTICE)。

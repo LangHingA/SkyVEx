@@ -103,7 +103,7 @@ tool/scripts/
 │
 │  [Third-party — verbatim, see each file's header]
 ├── Sky_Bstbake.py             # Terrain .meshes decoder — ThatSkyOldServer/SkyBstbake (MIT)
-├── meshes2obj_json.py         # Optional alt .meshes backend — that-sky-project (LGPL-2.1)
+├── meshes2obj_json.py         # Optional alt .meshes backend — 县小威 port of that-sky-project (LGPL-2.1)
 └── _meshopt/
     └── lib/
         └── meshoptimizer.dll  # zeux/meshoptimizer (MIT), self-compiled
@@ -120,7 +120,7 @@ repositories (only a SkyVEx attribution header is prepended):
 | File | Upstream | License |
 |------|----------|---------|
 | `Sky_Bstbake.py` | [ThatSkyOldServer/SkyBstbake](https://github.com/ThatSkyOldServer/SkyBstbake) — checion (雨人) & Heriel (落秋) | MIT |
-| `meshes2obj_json.py` | [that-sky-project](https://github.com/that-sky-project/that-sky-level-meshes) | LGPL-2.1 |
+| `meshes2obj_json.py` | 县小威 (XiaoWei) — port of [that-sky-project](https://github.com/that-sky-project/that-sky-level) | LGPL-2.1 |
 
 `meshoptimizer.dll` is compiled from [zeux/meshoptimizer](https://github.com/zeux/meshoptimizer)
 (MIT) official source.
@@ -162,7 +162,7 @@ standalone bundle.
 
 - **GUI, export engine, `.bin`/`.mesh` parsers, 3D preview, texture pipeline, backend system** — lingyunalingyun (this project's original code).
 - **Terrain decoder** `Sky_Bstbake.py` — checion (雨人) & Heriel (落秋), [ThatSkyOldServer/SkyBstbake](https://github.com/ThatSkyOldServer/SkyBstbake) (MIT).
-- **Optional `.meshes` backend** `meshes2obj_json.py` — [that-sky-project](https://github.com/that-sky-project/that-sky-level-meshes) (LGPL-2.1).
+- **Optional `.meshes` backend** `meshes2obj_json.py` — 县小威 (XiaoWei), port of [that-sky-project](https://github.com/that-sky-project/that-sky-level) (LGPL-2.1).
 - **Native decoder** `meshoptimizer.dll` — [Arseny Kapoulkine (zeux)](https://github.com/zeux/meshoptimizer) (MIT).
 - **Format references (public byte layouts, no code):** Miau — [Sky-.bin-reader](https://github.com/Miau0x1/Sky-.bin-reader); kfhammond — [SkyModelViewer](https://github.com/kfhammond/SkyModelViewer).
 
@@ -171,5 +171,6 @@ standalone bundle.
 SkyVEx's own code is released under the **MIT License** — see [LICENSE](./LICENSE).
 
 `meshes2obj_json.py` is licensed under **LGPL-2.1** (that file only) — see its
-header. Third-party components retain their original licenses; see
+header and the full license text at [licenses/LGPL-2.1.txt](./licenses/LGPL-2.1.txt).
+Third-party components retain their original licenses; see
 [NOTICE](./NOTICE).

@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 # ============================================================================
 #  SkyVEx · meshes2obj_json.py
-#  PROVENANCE : THIRD-PARTY — reproduced unmodified. NOT written by SkyVEx;
-#               taken from the upstream repository below.
+#  PROVENANCE : THIRD-PARTY — reproduced unmodified. NOT written by SkyVEx.
+#  AUTHOR     : 县小威 (XiaoWei) — ported from that-sky-project / that-sky-level,
+#               with the meshoptimizer vertex codec reimplemented in pure Python.
 #  UPSTREAM   : that-sky-project
-#               https://github.com/that-sky-project/that-sky-level-meshes
+#               https://github.com/that-sky-project/that-sky-level
 #  LICENSE    : LGPL-2.1  (governs THIS FILE ONLY; the rest of SkyVEx is MIT)
-#               https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
+#               full text bundled at licenses/LGPL-2.1.txt
 #  ROLE       : optional alternative pure-Python .meshes backend (GEO0 segment,
 #               no vertex colors). The default .meshes backend is Sky_Bstbake.
 # ============================================================================

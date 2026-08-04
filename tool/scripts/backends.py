@@ -7,7 +7,7 @@
 #  LICENSE    : MIT (see LICENSE)
 #  NOTE       : This registry only *dispatches* to parser modules. The parsers
 #               it loads keep their own provenance (Sky_Bstbake.py = upstream,
-#               meshes2obj_json.py = that-sky-project LGPL, mesh_parser.py =
+#               meshes2obj_json.py = 县小威 port of that-sky-project (LGPL), mesh_parser.py =
 #               original). See each file's own header.
 # ============================================================================
 
