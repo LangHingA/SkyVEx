@@ -59,9 +59,9 @@ class SkyExportGUI:
             self._scale = ctypes.windll.user32.GetDpiForSystem() / 96
         except Exception:
             self._scale = 1.0
-        w, h = int(1060 * self._scale), int(740 * self._scale)
+        w, h = int(1400 * self._scale), int(880 * self._scale)
         self.root.geometry(f"{w}x{h}")
-        self.root.minsize(int(900 * self._scale), int(620 * self._scale))
+        self.root.minsize(int(1180 * self._scale), int(680 * self._scale))
 
         self.running = False
         self.log_queue = queue.Queue()
@@ -356,9 +356,10 @@ class SkyExportGUI:
         self.marker_tree.pack(side="left", fill="both", expand=True)
         marker_scroll.pack(side="right", fill="y")
 
-        # buttons
+        # buttons — anchored to the window bottom so they stay visible
+        # regardless of how tall the resource/options area grows
         btn_frame = ttk.Frame(self.root, padding=(16, 8, 16, 0))
-        btn_frame.pack(fill="x")
+        btn_frame.pack(side="bottom", fill="x")
         self.run_btn = ttk.Button(
             btn_frame,
             text="开始导出",
@@ -401,13 +402,13 @@ class SkyExportGUI:
 
         # progress
         self.progress = ttk.Progressbar(self.root, mode="indeterminate")
-        self.progress.pack(fill="x", padx=16, pady=(6, 0))
+        self.progress.pack(side="bottom", fill="x", padx=16, pady=(6, 0))
 
         # log output
         log_frame = ttk.LabelFrame(
             self.root, text="日志输出", padding=(4, 2, 4, 4)
         )
-        log_frame.pack(fill="both", expand=True, padx=16, pady=(6, 12))
+        log_frame.pack(side="bottom", fill="x", padx=16, pady=(6, 12))
         self.log_text = tk.Text(
             log_frame,
             wrap="word",
