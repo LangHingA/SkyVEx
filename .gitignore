@@ -10,6 +10,8 @@ tool/scripts/[备份]*/
 *.spec
 build/
 dist/
+# ...but the bundled vgmstream CLI is a tracked dependency
+!tool/scripts/_vgmstream/vgmstream-cli.exe
 
 # old zip distribution
 tool.zip

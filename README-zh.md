@@ -1,25 +1,27 @@
 # SkyVEx
 
-**光遇模型可视化便捷导出**（Convenient Visualization and Export of Sky: Children of the Light Models）
+**光遇资源可视化便捷导出**（Convenient Visualization and Export of Sky: Children of the Light Assets）
 
-《光·遇》地图 3D 数据导出工具 — 可视化界面。
+《光·遇》资源导出工具（可视化界面）— 地图与模型几何（OBJ）、纹理（PNG）、音频（WAV）。
 
 [中文](./README-zh.md) | [English](./README.md)
 
 ## 这个项目是什么
 
-一个自包含的图形化工具，把光遇游戏数据导出成 Wavefront OBJ。**界面、地图→OBJ
-导出引擎、`.bin`/`.mesh` 解析器、3D 预览、纹理管线全部是 SkyVEx 原创代码**。仅
-地形解码器（`Sky_Bstbake.py`）和一个可选的备用后端（`meshes2obj_json.py`）为
-第三方，且**原样使用**，保留原作者署名与许可。
+一个自包含的图形化工具，把光遇游戏数据导出成开放格式：地图与模型转 Wavefront
+OBJ、纹理转 PNG、音频转 WAV。**界面、地图→OBJ 导出引擎、`.bin`/`.mesh` 解析器、
+3D 预览、纹理管线、音频导出编排全部是 SkyVEx 原创代码**。地形解码器
+（`Sky_Bstbake.py`）、一个可选的备用后端（`meshes2obj_json.py`）以及
+`meshoptimizer` / `vgmstream` 二进制为第三方，**原样使用**，保留原作者署名与许可。
 
 功能：
 
 - **一键扫描游戏目录** — 选择游戏安装路径，自动识别所有地图和 Mesh 文件
 - **APK 提取** — 直接打开光遇 APK 安装包，无需 PC 端游戏即可提取资源
-- **分页资源浏览** — 三个标签页（地形 / 模型库 / 图片资源），按场景分组的地图树、按前缀分组的 4000+ 独立模型、KTX 纹理图库
+- **分页资源浏览** — 四个标签页（地形 / 模型库 / 图片资源 / 音频），按场景分组的地图树、按前缀分组的 4000+ 独立模型、KTX 纹理图库、可展开到各段的 FMOD 音频 bank
 - **3D 预览** — 实时 OpenGL 预览，支持地形顶点着色（材质混合 + AO）和顶部柔光；点击任意地图或模型即可预览
 - **2D 图片预览** — 在图片资源标签页点击任意 KTX 纹理即可解码预览（BC1/BC3/BC4/BC5/BC6H/BC7）
+- **音频试听与导出** — 在音频标签页展开 bank、点击某段即可试听（再点暂停）；一键把 FMOD `.streams.bank` 音乐/音效批量导出为 WAV（内置 vgmstream 解码）
 - **按材质分组地形导出** — 地形 OBJ 按材质 ID 拆分，共享材质表（MTL），可直接在 Blender 中分配材质
 - **独立模型导出** — 浏览并批量导出单个 `.mesh` 模型（道具、角色、物件）为 OBJ，不限于地形地图
 - **标记类名扫描** — 从 `.bin` 文件扫描标记类名，自由勾选要导出的标记类型
@@ -52,6 +54,9 @@ pip install -r tool/scripts/requirements.txt
 `tool/scripts/_meshopt/lib/meshoptimizer.dll`（由
 [zeux/meshoptimizer](https://github.com/zeux/meshoptimizer)(MIT) 官方源码自行
 编译），**不是** pip 依赖。
+
+音频导出/试听通过内置的 **vgmstream** CLI 解码（`tool/scripts/_vgmstream/`，仅
+Windows），同样不是 pip 依赖；试听播放用标准库 `winsound`。
 
 ## 使用方法
 

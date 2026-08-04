@@ -1,27 +1,31 @@
 # SkyVEx
 
-**Convenient Visualization and Export of Sky: Children of the Light Models**
+**Convenient Visualization and Export of Sky: Children of the Light Assets**
 
-GUI tool for batch-exporting 3D map data from *Sky: Children of the Light*.
+GUI tool for batch-exporting *Sky: Children of the Light* assets — map & model
+geometry (OBJ), textures (PNG), and audio (WAV).
 
 [中文](./README-zh.md) | [English](./README.md)
 
 ## What this project is
 
-A self-contained graphical tool for turning Sky game data into Wavefront OBJ.
-The GUI, the level→OBJ export engine, the `.bin` and `.mesh` parsers, the 3D
-preview and the texture pipeline are all **original SkyVEx code**. Only the
-terrain decoder (`Sky_Bstbake.py`) and one optional alternate backend
-(`meshes2obj_json.py`) are third-party, and they are used **unmodified** with
-their original authorship and licenses intact.
+A self-contained graphical tool for turning Sky game data into open formats:
+maps and models to Wavefront OBJ, textures to PNG, and audio to WAV. The GUI,
+the level→OBJ export engine, the `.bin` and `.mesh` parsers, the 3D preview, the
+texture pipeline and the audio-export orchestration are all **original SkyVEx
+code**. The terrain decoder (`Sky_Bstbake.py`), one optional alternate backend
+(`meshes2obj_json.py`) and the `meshoptimizer` / `vgmstream` binaries are
+third-party, used **unmodified** with their original authorship and licenses
+intact.
 
 Features:
 
 - **One-click game directory scanning** — point at your game install, auto-discover all maps and mesh files
 - **APK extraction** — open a Sky APK directly and extract game assets without a PC install
-- **Tabbed resource browser** — three-tab layout (Terrain / Models / Images) with scene-grouped map tree, 4000+ individual meshes grouped by prefix, and KTX texture gallery
+- **Tabbed resource browser** — four-tab layout (Terrain / Models / Images / Audio) with scene-grouped map tree, 4000+ individual meshes grouped by prefix, KTX texture gallery, and FMOD audio banks expandable to their subsongs
 - **3D preview** — real-time OpenGL preview with vertex colors (terrain material blending) and top-down soft lighting; click any map or model to preview
 - **2D image preview** — click any KTX texture in the Images tab to decode and preview (BC1/BC3/BC4/BC5/BC6H/BC7)
+- **Audio preview & export** — expand a bank in the Audio tab and click any subsong to hear it (click again to stop); batch-export all FMOD `.streams.bank` music/SFX to WAV via bundled vgmstream
 - **Per-material terrain export** — terrain OBJ split by material ID with a shared material table (MTL), ready for Blender material assignment
 - **Individual mesh export** — browse and batch-export standalone `.mesh` models (props, characters, items) to OBJ, not just terrain maps
 - **Marker class scanning** — scan marker class names from `.bin` files, pick which marker types to export
@@ -55,6 +59,10 @@ The `meshoptimizer` native decoder used for fine terrain is **shipped prebuilt**
 at `tool/scripts/_meshopt/lib/meshoptimizer.dll` (self-compiled from
 [zeux/meshoptimizer](https://github.com/zeux/meshoptimizer), MIT). It is **not**
 a pip dependency.
+
+Audio export/preview shells out to the prebuilt **vgmstream** CLI shipped at
+`tool/scripts/_vgmstream/` (Windows only). Also not a pip dependency; audio
+playback uses the standard-library `winsound`.
 
 ## Usage
 
@@ -100,13 +108,15 @@ tool/scripts/
 ├── mesh_parser.py             # Pure-Python .mesh parser (all versions)
 ├── preview3d.py               # OpenGL 3D preview panel
 ├── bintojson.py               # TGCL .bin → dict/JSON parser (format ref: Miau)
+├── audio_export.py            # FMOD .streams.bank → WAV (drives vgmstream)
 │
 │  [Third-party — verbatim, see each file's header]
 ├── Sky_Bstbake.py             # Terrain .meshes decoder — ThatSkyOldServer/SkyBstbake (MIT)
 ├── meshes2obj_json.py         # Optional alt .meshes backend — 县小威 port of that-sky-project (LGPL-2.1)
-└── _meshopt/
-    └── lib/
-        └── meshoptimizer.dll  # zeux/meshoptimizer (MIT), self-compiled
+├── _meshopt/
+│   └── lib/
+│       └── meshoptimizer.dll  # zeux/meshoptimizer (MIT), self-compiled
+└── _vgmstream/                # vgmstream-cli.exe + runtime DLLs (audio decode)
 ```
 
 Every script file begins with a provenance header. See [NOTICE](./NOTICE) for
@@ -122,10 +132,13 @@ repositories (only a SkyVEx attribution header is prepended):
 | `Sky_Bstbake.py` | [ThatSkyOldServer/SkyBstbake](https://github.com/ThatSkyOldServer/SkyBstbake) — checion (雨人) & Heriel (落秋) | MIT |
 | `meshes2obj_json.py` | 县小威 (XiaoWei) — port of [that-sky-project](https://github.com/that-sky-project/that-sky-level) | LGPL-2.1 |
 
-`meshoptimizer.dll` is compiled from [zeux/meshoptimizer](https://github.com/zeux/meshoptimizer)
-(MIT) official source.
+Bundled binaries (used as-is): `meshoptimizer.dll` is compiled from
+[zeux/meshoptimizer](https://github.com/zeux/meshoptimizer) (MIT) official
+source; `_vgmstream/` is the official [vgmstream](https://github.com/vgmstream/vgmstream)
+Windows CLI build (vgmstream-cli.exe + its decoder DLLs). See
+[NOTICE](./NOTICE) and `tool/scripts/_vgmstream/COPYING` for their licenses.
 
-## OBJ output
+## Output
 
 | Data | Description |
 |------|-------------|
@@ -134,10 +147,11 @@ repositories (only a SkyVEx attribution header is prepended):
 | Models (standalone) | Individual `.mesh` files exported to `Meshes/` subfolder with UVs |
 | Markers | Small octahedron pins at interaction points (optional), colored per class |
 | Textures | PNG files + `map_Kd` material references (optional) |
+| Audio | WAV per subsong under `Audio/<bank>/<index>_<stream name>.wav` (optional) |
 
 ## How it works (format internals)
 
-SkyVEx reads three kinds of files. All parsing is done from the raw bytes; the
+SkyVEx reads several kinds of files. All parsing is done from the raw bytes; the
 layouts below were recovered by inspection and cross-checked against public
 references (byte layouts only — no third-party parser code).
 
@@ -208,6 +222,19 @@ The TGCL `.bin` files list object instances (with per-instance transforms) and
 interaction markers. `bintojson.py` walks this structure so the exporter can
 place in-map models and emit marker pins.
 
+### Audio (`audio_export.py`)
+
+Sky ships music and SFX as FMOD Studio banks under `Data/Audio/Fmod/`. Each
+sound event is three files — `X.bank` (event metadata), `X.assets.bank` (short
+samples, encrypted) and `X.streams.bank` (streamed music/ambience). The streamed
+banks hold many "subsongs" encoded as Custom Vorbis or FMOD FADPCM.
+
+`audio_export.py` doesn't decode audio itself — it shells out to the bundled
+`vgmstream-cli`. It enumerates a bank's subsongs (`-m`) to build the Audio tab,
+decodes a single subsong for click-to-preview (played with `winsound`), and
+batch-exports every subsong to `Audio/<bank>/<index>_<stream name>.wav`
+(`-s 1 -S 0 -o "?03s_?n.wav"`). The encrypted `.assets.bank` samples are skipped.
+
 ### Supported versions at a glance
 
 | Kind | Versions | Notes |
@@ -249,10 +276,11 @@ that variant still needs Python installed on the target machine.
 
 ## Credits
 
-- **GUI, export engine, `.bin`/`.mesh` parsers, 3D preview, texture pipeline, backend system** — lingyunalingyun (this project's original code).
+- **GUI, export engine, `.bin`/`.mesh` parsers, 3D preview, texture pipeline, audio export, backend system** — lingyunalingyun (this project's original code).
 - **Terrain decoder** `Sky_Bstbake.py` — checion (雨人) & Heriel (落秋), [ThatSkyOldServer/SkyBstbake](https://github.com/ThatSkyOldServer/SkyBstbake) (MIT).
 - **Optional `.meshes` backend** `meshes2obj_json.py` — 县小威 (XiaoWei), port of [that-sky-project](https://github.com/that-sky-project/that-sky-level) (LGPL-2.1).
 - **Native decoder** `meshoptimizer.dll` — [Arseny Kapoulkine (zeux)](https://github.com/zeux/meshoptimizer) (MIT).
+- **Audio decoder** `vgmstream-cli` — [vgmstream](https://github.com/vgmstream/vgmstream) (official Windows build, bundled unmodified).
 - **Format references (public byte layouts, no code):** Miau — [Sky-.bin-reader](https://github.com/Miau0x1/Sky-.bin-reader); kfhammond — [SkyModelViewer](https://github.com/kfhammond/SkyModelViewer).
 
 ## License

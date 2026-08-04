@@ -94,3 +94,17 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+================================================================================
+vgmstream — audio decoder CLI (native executable + libraries)
+https://github.com/vgmstream/vgmstream
+Bundled as tool/scripts/_vgmstream/ (vgmstream-cli.exe + its runtime DLLs)
+================================================================================
+
+SkyVEx shells out to the prebuilt vgmstream-cli to decode FMOD `.streams.bank`
+audio to WAV; audio_export.py only invokes it and contains no vgmstream code.
+The official Windows build is redistributed unmodified. vgmstream itself is
+under a permissive license; the bundle also ships third-party decoder libraries
+(FFmpeg libraries, libvorbis, libmpg123, libspeex, libatrac9, libcelt,
+libg719_decode) under their own licenses. See tool/scripts/_vgmstream/COPYING
+for the full vgmstream license and the notices covering these libraries.

@@ -7,7 +7,7 @@
 #  LICENSE    : MIT (see LICENSE)
 # ============================================================================
 """
-SkyVEx — 光遇模型可视化便捷导出
+SkyVEx — 光遇资源可视化便捷导出
 """
 
 import tkinter as tk
@@ -73,6 +73,7 @@ class SkyExportGUI:
         self._export_single_map_fn = None
         self._script_dir = SCRIPT_DIR
         self._bintojson_path = os.path.join(SCRIPT_DIR, "bintojson.py")
+        self._playing_audio = None   # (bank, index) currently previewing
 
         self._setup_style()
         self._build_ui()
@@ -179,7 +180,7 @@ class SkyExportGUI:
             tb = hdr.bbox(title_id)
             sub_x = (tb[2] + 12) if tb else 140
             hdr.create_text(sub_x, hdr_h // 2 + 4, anchor="w",
-                           text="光遇模型可视化便捷导出", fill=self.FG_DIM,
+                           text="光遇资源可视化便捷导出", fill=self.FG_DIM,
                            font=("Segoe UI", 9), tags="bg")
             hdr.create_text(w - 18, hdr_h // 2, anchor="e",
                            text="✦", fill="#2a4060",
@@ -232,7 +233,7 @@ class SkyExportGUI:
         self._tab_trees = {}
         self._active_tab = "terrain"
 
-        for key, text in [("terrain", "地形"), ("models", "模型库"), ("images", "图片资源")]:
+        for key, text in [("terrain", "地形"), ("models", "模型库"), ("images", "图片资源"), ("audio", "音频")]:
             lbl = tk.Label(
                 tab_bar, text=text, fg=self.FG_DIM, bg=self.BG,
                 font=("Segoe UI", 9), padx=10, pady=3, cursor="hand2",
@@ -246,7 +247,7 @@ class SkyExportGUI:
         )
         self.map_count_label.pack(side="right")
 
-        for key in ("terrain", "models", "images"):
+        for key in ("terrain", "models", "images", "audio"):
             frame = tk.Frame(map_frame, bg=self.BG_PANEL)
             tree = ttk.Treeview(
                 frame, show="tree", selectmode="none", style="Map.Treeview"
@@ -331,6 +332,13 @@ class SkyExportGUI:
             variable=self.texture_var,
         ).pack(anchor="w", pady=(2, 0))
 
+        self.audio_var = tk.BooleanVar(value=False)
+        ttk.Checkbutton(
+            opt_frame,
+            text="导出音频 (FMOD→WAV)",
+            variable=self.audio_var,
+        ).pack(anchor="w", pady=(2, 0))
+
         # marker classes
         marker_frame = ttk.LabelFrame(
             right_panel, text="标记类名", padding=(8, 4, 8, 6)
@@ -356,10 +364,10 @@ class SkyExportGUI:
         self.marker_tree.pack(side="left", fill="both", expand=True)
         marker_scroll.pack(side="right", fill="y")
 
-        # buttons — anchored to the window bottom so they stay visible
-        # regardless of how tall the resource/options area grows
+        # buttons — packed further below (after the log frame) so the bottom
+        # stack ends up as: buttons, then progress, then log at the very bottom,
+        # while staying anchored so they're always visible
         btn_frame = ttk.Frame(self.root, padding=(16, 8, 16, 0))
-        btn_frame.pack(side="bottom", fill="x")
         self.run_btn = ttk.Button(
             btn_frame,
             text="开始导出",
@@ -400,9 +408,8 @@ class SkyExportGUI:
             mid_frame, text="3D 预览", padding=(0, 0, 0, 0),
         )
 
-        # progress
+        # progress (packed below, after the log frame — see bottom stack)
         self.progress = ttk.Progressbar(self.root, mode="indeterminate")
-        self.progress.pack(side="bottom", fill="x", padx=16, pady=(6, 0))
 
         # log output
         log_frame = ttk.LabelFrame(
@@ -429,6 +436,11 @@ class SkyExportGUI:
         self.log_text.configure(yscrollcommand=log_scroll.set)
         self.log_text.pack(side="left", fill="both", expand=True)
         log_scroll.pack(side="right", fill="y")
+
+        # Bottom stack (packed after log_frame, side="bottom"): log sits at the
+        # very bottom, progress above it, buttons just under the resource area.
+        self.progress.pack(side="bottom", fill="x", padx=16, pady=(6, 0))
+        btn_frame.pack(side="bottom", fill="x")
 
         self.log_text.tag_configure("ok", foreground="#80d880")
         self.log_text.tag_configure("warn", foreground="#f0c050")
@@ -607,6 +619,10 @@ class SkyExportGUI:
             self._populate_image_entries()
         except Exception as e:
             self._log(f"[WARN] 图片资源扫描失败: {e}\n")
+        try:
+            self._populate_audio_entries()
+        except Exception as e:
+            self._log(f"[WARN] 音频扫描失败: {e}\n")
 
         self._update_map_count()
 
@@ -670,6 +686,46 @@ class SkyExportGUI:
                 }
                 total += 1
 
+    def _populate_audio_entries(self):
+        audio_tree = self._tab_trees["audio"]
+        game_dir = self.game_dir_var.get().strip()
+        if not game_dir:
+            return
+        fmod_dir = os.path.join(
+            game_dir, "data", "assets", "audioExtra", "Data", "Audio", "Fmod"
+        )
+        root = fmod_dir if os.path.isdir(fmod_dir) else game_dir
+        banks = []
+        for dirpath, _dirs, files in os.walk(root):
+            for f in files:
+                if f.lower().endswith(".streams.bank"):
+                    banks.append(os.path.join(dirpath, f))
+        banks.sort()
+        if not banks:
+            return
+        try:
+            import audio_export
+        except Exception:
+            audio_export = None
+
+        gid = audio_tree.insert("", "end", text="FMOD 音乐/音效", open=True)
+        self.map_data[f"a:{gid}"] = {"audio_group": True}
+        total = 0
+        for bank in banks:
+            name = os.path.basename(bank)[:-len(".streams.bank")]
+            count = audio_export.subsong_count(bank) if audio_export else 0
+            bid = audio_tree.insert(gid, "end", text=f"{name} — {count} 段")
+            self.map_data[f"a:{bid}"] = {"name": name, "audio_bank": bank}
+            for i in range(1, count + 1):
+                cid = audio_tree.insert(bid, "end", text=f"{i:03d}  (点击试听)")
+                self.map_data[f"a:{cid}"] = {
+                    "name": f"{name}#{i}", "audio_bank": bank, "subsong": i,
+                }
+                total += 1
+        audio_tree.item(
+            gid, text=f"FMOD 音乐/音效 — {len(banks)} bank / {total} 段"
+        )
+
     def _switch_tab(self, key):
         for k, frame in self._tab_frames.items():
             frame.pack_forget()
@@ -681,7 +737,7 @@ class SkyExportGUI:
                 lbl.configure(fg=self.FG_DIM, font=("Segoe UI", 9))
         self._active_tab = key
 
-    _TAB_PREFIX = {"terrain": "t", "models": "m", "images": "i"}
+    _TAB_PREFIX = {"terrain": "t", "models": "m", "images": "i", "audio": "a"}
 
     def _on_map_click(self, event):
         tree = self._tab_trees.get(self._active_tab)
@@ -706,6 +762,54 @@ class SkyExportGUI:
         elif "image_file" in data:
             if self._preview_panel:
                 self._load_preview_for_image(data["image_file"], data.get("name", ""))
+        elif "subsong" in data:
+            self._play_audio_subsong(data["audio_bank"], data["subsong"], iid, tree)
+        elif data.get("audio_group"):
+            self._stop_audio()
+
+    def _stop_audio(self):
+        self._playing_audio = None
+        try:
+            import winsound
+            winsound.PlaySound(None, winsound.SND_PURGE)
+            self.log_queue.put("[♪] 已停止试听\n")
+        except Exception:
+            pass
+
+    def _play_audio_subsong(self, bank, index, iid, tree):
+        # Toggle: clicking the currently-previewing subsong pauses/stops it.
+        if self._playing_audio == (bank, index):
+            self._stop_audio()
+            return
+        self._playing_audio = (bank, index)
+
+        def worker():
+            import os
+            import tempfile
+            import audio_export
+            try:
+                import winsound
+            except Exception:
+                self._playing_audio = None
+                self.log_queue.put("[WARN] 试听仅支持 Windows\n")
+                return
+            base = os.path.basename(bank)[:-len(".streams.bank")]
+            tmp = os.path.join(
+                tempfile.gettempdir(), f"skyvex_preview_{base}_{index}.wav"
+            )
+            name = audio_export.subsong_name(bank, index)
+            if not audio_export.decode_subsong(bank, index, tmp):
+                self._playing_audio = None
+                self.log_queue.put(f"[WARN] 试听失败: {base} #{index}\n")
+                return
+            winsound.PlaySound(tmp, winsound.SND_FILENAME | winsound.SND_ASYNC)
+            self.log_queue.put(f"[♪] 试听 {base} #{index}  {name}\n")
+            if name:
+                self.root.after(
+                    0, lambda: tree.item(iid, text=f"{index:03d}  {name}")
+                )
+
+        threading.Thread(target=worker, daemon=True).start()
 
     def _update_map_count(self):
         maps = sum(1 for d in self.map_data.values() if "path" in d)
@@ -1303,7 +1407,7 @@ class SkyExportGUI:
 
         selected = self._get_selected_maps()
         selected_meshes = self._get_selected_meshes()
-        if not selected and not selected_meshes:
+        if not selected and not selected_meshes and not self.audio_var.get():
             messagebox.showwarning("提示", "请选择至少一张地图或一个模型")
             return
 
@@ -1328,6 +1432,16 @@ class SkyExportGUI:
                 ]
                 image_dirs = [d for d in candidates if os.path.isdir(d)]
 
+        audio_dir = None
+        if self.audio_var.get():
+            game_dir = self.game_dir_var.get().strip()
+            if game_dir:
+                fmod = os.path.join(
+                    game_dir, "data", "assets", "audioExtra",
+                    "Data", "Audio", "Fmod",
+                )
+                audio_dir = fmod if os.path.isdir(fmod) else game_dir
+
         self.running = True
         self.run_btn.configure(state="disabled")
         self.stop_btn.configure(state="normal")
@@ -1335,14 +1449,14 @@ class SkyExportGUI:
 
         t = threading.Thread(
             target=self._do_export,
-            args=(selected, mesh_dir, export_markers, enabled_classes, output_dir, image_dirs, selected_meshes),
+            args=(selected, mesh_dir, export_markers, enabled_classes, output_dir, image_dirs, selected_meshes, audio_dir),
             daemon=True,
         )
         t.start()
 
     def _do_export(
         self, selected, mesh_dir, export_markers, enabled_classes,
-        output_dir, image_dirs, selected_meshes=None,
+        output_dir, image_dirs, selected_meshes=None, audio_dir=None,
     ):
         redirector = StdoutRedirector(self.log_queue)
         old_out, old_err = sys.stdout, sys.stderr
@@ -1409,7 +1523,19 @@ class SkyExportGUI:
             if selected_meshes and self._batch_mod and self.running:
                 self._do_export_meshes(selected_meshes, output_dir)
 
-            if not self._export_single_map_fn and not self._batch_mod:
+            if audio_dir and self.running:
+                try:
+                    import audio_export
+                    self.log_queue.put("\n开始导出音频 (FMOD→WAV)\n")
+                    audio_export.export_audio(
+                        audio_dir, output_dir,
+                        log=lambda s: self.log_queue.put(s),
+                    )
+                except Exception as e:
+                    self.log_queue.put(f"\n❌ 音频导出出错: {e}\n")
+
+            if (selected or selected_meshes) and \
+                    not self._export_single_map_fn and not self._batch_mod:
                 self.log_queue.put("❌ 导出模块未加载\n")
         except Exception as e:
             self.log_queue.put(f"\n❌ 导出出错: {e}\n")
