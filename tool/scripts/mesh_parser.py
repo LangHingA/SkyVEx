@@ -229,7 +229,15 @@ def _parse_compressed(raw, version, filepath):
     """
     file_size = len(raw)
     animated = raw[0x48] != 0
-    payload_off = 0x4E if version >= 0x20 else 0x4A
+    if version >= 0x20:
+        # Attach-point markers (e.g. a cape's "Capestar_Marker_N") sit between
+        # the fixed header and the payload: a u32 count at 0x4A followed by
+        # count fixed-size 112-byte records. The count is 0 for most meshes,
+        # so the payload normally starts at 0x4E.
+        marker_count = _read_u32(raw, 0x4A)
+        payload_off = 0x4E + marker_count * 112
+    else:
+        payload_off = 0x4A
 
     if payload_off + 12 > file_size:
         raise ValueError("File too small for compression header")
