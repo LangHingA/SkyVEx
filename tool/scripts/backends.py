@@ -291,16 +291,20 @@ class BstBakeMeshesBackend(MeshesBackend):
                     verts = chunk.get('verts', [])
                     ib_raw = chunk.get('ib_raw', b'')
                     patches = chunk.get('patches', [])
-                    terrain_patches = [p for p in patches if p['array'] == 'A']
+                    # Array A = terrain, Array B = CloudProxy. Both are real
+                    # renderable geometry (the upstream tool emits both), so
+                    # include both — some levels (e.g. Night_GO_Gallery) have no
+                    # terrain patches at all and are entirely CloudProxy.
+                    render_patches = [p for p in patches if p['array'] in ('A', 'B')]
 
-                    if not verts or not ib_raw or not terrain_patches:
+                    if not verts or not ib_raw or not render_patches:
                         continue
 
                     base_v = len(all_verts)
                     vert_indices = {}
                     new_idx = 0
 
-                    for patch in terrain_patches:
+                    for patch in render_patches:
                         vs = patch['vert_start']
                         ve = patch['vert_end']
                         for vi in range(vs, ve):
@@ -316,7 +320,7 @@ class BstBakeMeshesBackend(MeshesBackend):
                                 all_mat_ids.append(self._dominant_material(mats))
                                 new_idx += 1
 
-                    for patch in terrain_patches:
+                    for patch in render_patches:
                         ib_start = patch['ib_byte_off']
                         ib_end = ib_start + patch['ib_byte_len']
                         patch_bytes = ib_raw[ib_start:ib_end]
