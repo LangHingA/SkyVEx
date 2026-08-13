@@ -43,6 +43,23 @@ OBJ、纹理转 PNG、音频转 WAV。**界面、地图→OBJ 导出引擎、`.b
 |----------|----------|
 | ![纹理](./docs/ui-textures.png) | ![音频](./docs/ui-audio.png) |
 
+## 安装
+
+**通过 npm（Windows，最省事）：**
+
+```bash
+npm install -g skyvex
+skyvex
+```
+
+会拉取独立版 GUI（无需 Python），并注册 `skyvex` 终端命令。国内建议加淘宝镜像加速：
+`npm install -g skyvex --registry https://registry.npmmirror.com`
+
+**或直接下 exe：** 从 [最新 Release](https://github.com/lingyunalingyun/SkyVEx/releases/latest)
+下载 `SkyVEx.exe` 双击运行。
+
+**或从源码运行：** 见下方 [依赖](#依赖)。
+
 ## 依赖
 
 Python 3.8+

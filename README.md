@@ -48,6 +48,25 @@ Features:
 |-----------------|-----------|
 | ![Textures](./docs/ui-textures.png) | ![Audio](./docs/ui-audio.png) |
 
+## Install
+
+**Via npm (Windows, easiest):**
+
+```bash
+npm install -g skyvex
+skyvex
+```
+
+This pulls the standalone GUI (no Python needed) and adds a `skyvex` command.
+In mainland China, add a mirror for speed:
+`npm install -g skyvex --registry https://registry.npmmirror.com`
+
+**Or grab the exe:** download `SkyVEx.exe` from the
+[latest release](https://github.com/lingyunalingyun/SkyVEx/releases/latest) and
+run it directly.
+
+**Or run from source:** see [Requirements](#requirements) below.
+
 ## Requirements
 
 Python 3.8+
