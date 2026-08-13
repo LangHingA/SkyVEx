@@ -1,0 +1,39 @@
+{
+  "name": "skyvex",
+  "version": "1.0.2",
+  "description": "SkyVEx — asset exporter GUI for Sky: Children of the Light (3D maps/models, textures, audio). Windows launcher installed via npm.",
+  "bin": {
+    "skyvex": "bin/skyvex.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/install.js"
+  },
+  "os": [
+    "win32"
+  ],
+  "files": [
+    "bin/skyvex.js",
+    "scripts/install.js",
+    "README.md"
+  ],
+  "keywords": [
+    "sky",
+    "children-of-the-light",
+    "asset-exporter",
+    "obj",
+    "ktx",
+    "modding"
+  ],
+  "homepage": "https://github.com/lingyunalingyun/SkyVEx",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lingyunalingyun/SkyVEx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lingyunalingyun/SkyVEx/issues"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=14"
+  }
+}
