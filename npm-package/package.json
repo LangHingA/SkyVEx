@@ -5,15 +5,12 @@
   "bin": {
     "skyvex": "bin/skyvex.js"
   },
-  "scripts": {
-    "postinstall": "node scripts/install.js"
-  },
   "os": [
     "win32"
   ],
   "files": [
     "bin/skyvex.js",
-    "scripts/install.js",
+    "bin/SkyVEx.exe",
     "README.md"
   ],
   "keywords": [

@@ -10,7 +10,12 @@ Terminal installer for **SkyVEx** — an asset exporter GUI for *Sky: Children o
 npm install -g skyvex
 ```
 
-This downloads the SkyVEx GUI binary (~40 MB) from the matching [GitHub Release](https://github.com/lingyunalingyun/SkyVEx/releases).
+The GUI binary (~40 MB) ships inside the package — no extra download, no
+post-install script. In mainland China, use an npm mirror for speed:
+
+```
+npm install -g skyvex --registry https://registry.npmmirror.com
+```
 
 ## Run
 
