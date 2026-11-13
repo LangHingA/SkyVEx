@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # ============================================================================
 #  SkyVEx · mesh_parser.py  —  pure-Python .mesh model parser (all versions)
-#  PROVENANCE : ORIGINAL. Every line written by lingyunalingyun for SkyVEx.
+#  PROVENANCE : ORIGINAL. Every line written by LANGHINGA for SkyVEx.
 #               No code taken from any other repository.
-#  AUTHOR     : lingyunalingyun · https://github.com/lingyunalingyun
+#  AUTHOR     : LANGHINGA · https://github.com/LangHingA
 #  LICENSE    : MIT (see LICENSE)
 #  FORMAT REF : .mesh byte layout cross-checked against SkyModelViewer
 #               https://github.com/kfhammond/SkyModelViewer  (C#; only the
