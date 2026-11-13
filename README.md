@@ -62,7 +62,7 @@ In mainland China, add a mirror for speed:
 `npm install -g skyvex --registry https://registry.npmmirror.com`
 
 **Or grab the exe:** download `SkyVEx.exe` from the
-[latest release](https://github.com/lingyunalingyun/SkyVEx/releases/latest) and
+[latest release](https://github.com/LangHingA/SkyVEx/releases/latest) and
 run it directly.
 
 **Or run from source:** see [Requirements](#requirements) below.
@@ -126,7 +126,7 @@ SkyVEx.exe                         # Windows launcher (build from SkyVEx.py)
 SkyVEx.py                          # Launcher entry point
 │
 tool/scripts/
-│  [Original — lingyunalingyun]
+│  [Original — LANGHINGA]
 ├── gui.py                     # GUI frontend & texture pipeline
 ├── exporter.py                # Level → OBJ/MTL assembly engine
 ├── backends.py                # Pluggable backend registry
@@ -301,7 +301,7 @@ that variant still needs Python installed on the target machine.
 
 ## Credits
 
-- **GUI, export engine, `.bin`/`.mesh` parsers, 3D preview, texture pipeline, audio export, backend system** — lingyunalingyun (this project's original code).
+- **GUI, export engine, `.bin`/`.mesh` parsers, 3D preview, texture pipeline, audio export, backend system** — LANGHINGA (this project's original code).
 - **Terrain decoder** `Sky_Bstbake.py` — checion (雨人) & Heriel (落秋), [ThatSkyOldServer/SkyBstbake](https://github.com/ThatSkyOldServer/SkyBstbake) (MIT).
 - **Optional `.meshes` backend** `meshes2obj_json.py` — 县小威 (XiaoWei), port of [that-sky-project](https://github.com/that-sky-project/that-sky-level) (LGPL-2.1).
 - **Native decoder** `meshoptimizer.dll` — [Arseny Kapoulkine (zeux)](https://github.com/zeux/meshoptimizer) (MIT).
