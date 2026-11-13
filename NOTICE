@@ -4,7 +4,7 @@ repository and license. This NOTICE reproduces the third-party licenses.
 This project includes third-party parsing scripts that are not original to SkyVEx.
 Their licenses and copyright notices are reproduced below.
 
-The bintojson.py parser was written from scratch by lingyunalingyun, based on the
+The bintojson.py parser was written from scratch by LANGHINGA, based on the
 TGCL binary format researched by Miau. It does not contain code from any upstream
 repository.
 
