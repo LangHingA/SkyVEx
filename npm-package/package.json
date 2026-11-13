@@ -21,13 +21,13 @@
     "ktx",
     "modding"
   ],
-  "homepage": "https://github.com/lingyunalingyun/SkyVEx",
+  "homepage": "https://github.com/LangHingA/SkyVEx",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lingyunalingyun/SkyVEx.git"
+    "url": "git+https://github.com/LangHingA/SkyVEx.git"
   },
   "bugs": {
-    "url": "https://github.com/lingyunalingyun/SkyVEx/issues"
+    "url": "https://github.com/LangHingA/SkyVEx/issues"
   },
   "license": "MIT",
   "engines": {
