@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # ============================================================================
 #  SkyVEx · exporter.py  —  Sky level -> OBJ/MTL assembly engine
-#  PROVENANCE : ORIGINAL. Every line written by lingyunalingyun for SkyVEx.
+#  PROVENANCE : ORIGINAL. Every line written by LANGHINGA for SkyVEx.
 #               No code taken from any other repository.
-#  AUTHOR     : lingyunalingyun · https://github.com/lingyunalingyun
+#  AUTHOR     : LANGHINGA · https://github.com/LangHingA
 #  LICENSE    : MIT (see LICENSE)
 # ============================================================================
 #
