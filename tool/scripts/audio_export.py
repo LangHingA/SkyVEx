@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # ============================================================================
 #  SkyVEx · audio_export.py  —  FMOD bank -> WAV audio exporter
-#  PROVENANCE : ORIGINAL. Every line written by lingyunalingyun for SkyVEx.
+#  PROVENANCE : ORIGINAL. Every line written by LANGHINGA for SkyVEx.
 #               No code taken from any other repository.
-#  AUTHOR     : lingyunalingyun · https://github.com/lingyunalingyun
+#  AUTHOR     : LANGHINGA · https://github.com/LangHingA
 #  LICENSE    : MIT (see LICENSE)
 #  NOTE       : This module only orchestrates the bundled vgmstream-cli.exe
 #               (see _vgmstream/, its own license in _vgmstream/COPYING). It
