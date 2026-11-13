@@ -27,7 +27,7 @@ Launches the GUI and returns your terminal.
 
 ## Links
 
-- Repo & docs: https://github.com/lingyunalingyun/SkyVEx
-- Releases: https://github.com/lingyunalingyun/SkyVEx/releases
+- Repo & docs: https://github.com/LangHingA/SkyVEx
+- Releases: https://github.com/LangHingA/SkyVEx/releases
 
-MIT © lingyunalingyun
+MIT © LANGHINGA
