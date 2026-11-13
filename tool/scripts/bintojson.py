@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # ============================================================================
 #  SkyVEx · bintojson.py  —  TGCL .bin -> dict/JSON parser
-#  PROVENANCE : ORIGINAL. Every line written by lingyunalingyun for SkyVEx.
+#  PROVENANCE : ORIGINAL. Every line written by LANGHINGA for SkyVEx.
 #               No code taken from any other repository.
-#  AUTHOR     : lingyunalingyun · https://github.com/lingyunalingyun
+#  AUTHOR     : LANGHINGA · https://github.com/LangHingA
 #  LICENSE    : MIT (see LICENSE)
 #  FORMAT REF : TGCL binary layout researched by Miau
 #               https://github.com/Miau0x1/Sky-.bin-reader
