@@ -55,7 +55,7 @@ skyvex
 会拉取独立版 GUI（无需 Python），并注册 `skyvex` 终端命令。国内建议加淘宝镜像加速：
 `npm install -g skyvex --registry https://registry.npmmirror.com`
 
-**或直接下 exe：** 从 [最新 Release](https://github.com/lingyunalingyun/SkyVEx/releases/latest)
+**或直接下 exe：** 从 [最新 Release](https://github.com/LangHingA/SkyVEx/releases/latest)
 下载 `SkyVEx.exe` 双击运行。
 
 **或从源码运行：** 见下方 [依赖](#依赖)。
@@ -117,7 +117,7 @@ SkyVEx.exe                         # Windows 启动器（由 SkyVEx.py 构建）
 SkyVEx.py                          # 启动器入口脚本
 │
 tool/scripts/
-│  [原创 — lingyunalingyun]
+│  [原创 — LANGHINGA]
 ├── gui.py                     # 可视化界面 & 纹理管线
 ├── exporter.py                # 地图 → OBJ/MTL 组装引擎
 ├── backends.py                # 可插拔后端注册层
@@ -256,7 +256,7 @@ pyinstaller --noconfirm --clean SkyVEx.spec
 
 ## 致谢
 
-- **GUI、导出引擎、`.bin`/`.mesh` 解析器、3D 预览、纹理管线、后端系统** — lingyunalingyun（本项目原创代码）。
+- **GUI、导出引擎、`.bin`/`.mesh` 解析器、3D 预览、纹理管线、后端系统** — LANGHINGA（本项目原创代码）。
 - **地形解码器** `Sky_Bstbake.py` — checion (雨人) & Heriel (落秋)，[ThatSkyOldServer/SkyBstbake](https://github.com/ThatSkyOldServer/SkyBstbake) (MIT)。
 - **可选 `.meshes` 后端** `meshes2obj_json.py` — 县小威 (XiaoWei)，移植自 [that-sky-project](https://github.com/that-sky-project/that-sky-level) (LGPL-2.1)。
 - **原生解码库** `meshoptimizer.dll` — [Arseny Kapoulkine (zeux)](https://github.com/zeux/meshoptimizer) (MIT)。
